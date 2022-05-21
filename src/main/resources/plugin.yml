@@ -1,0 +1,4 @@
+name: server-monitor
+main: top.mty.ServerMonitor
+version: 1.0-SNAPSHOT
+author: mty
