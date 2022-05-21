@@ -1,14 +1,11 @@
 package top.mty.executor;
 
 import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.Plugin;
 import top.mty.ServerMonitor;
 import top.mty.converter.Player2MyPlayer;
 import top.mty.entity.MyPlayer;
@@ -40,15 +37,13 @@ public class PlayerJoinExecutor implements EventExecutor {
                 myPlayer.getGameMode().name(),
                 myPlayer.getIsNewPlayer().getDesc(),
                 DateUtils.now());
-        Configuration playerConfig = instance.getCustomConfig();
-        String pushUrl = playerConfig.getString("player.login.pushUrl");
-        if (pushUrl.endsWith("/")) {
-            pushUrl = pushUrl.substring(0, pushUrl.length() - 1);
-        }
+        Configuration playerConfig = instance.getGeneralConfig();
+        String barkPushUrl = playerConfig.getString("player.pushUrl.bark");
         try {
-            String command = "curl " + pushUrl + String.format("/%s/%s", "玩家登录提醒",
+            String command = "curl " + barkPushUrl + String.format("/%s/%s", "玩家登录提醒",
                     description);
             Process p = Runtime.getRuntime().exec(command);
+            logger.info(String.format("执行了curl: %s", description));
         } catch (IOException e) {
             logger.warning("命令执行失败");
         }

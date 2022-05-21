@@ -15,8 +15,7 @@ import java.io.IOException;
 public class ServerMonitor extends JavaPlugin {
 
     private static ServerMonitor instance;
-    private File customConfigFile;
-    private FileConfiguration customConfig;
+    private FileConfiguration generalConfig;
 
     public static ServerMonitor getInstance() {
         return instance;
@@ -30,7 +29,7 @@ public class ServerMonitor extends JavaPlugin {
         getServer().getPluginManager().registerEvent(PlayerJoinEvent.class, new PlayerJoinListener(),
                 EventPriority.NORMAL, new PlayerJoinExecutor(), this);
         try {
-            createCustomConfig();
+            createCustomConfig("general.yml");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -40,23 +39,24 @@ public class ServerMonitor extends JavaPlugin {
         getLogger().info("ServerMonitor Disabled");
     }
 
-    public FileConfiguration getCustomConfig() {
-        return this.customConfig;
+    public FileConfiguration getGeneralConfig() {
+        return this.generalConfig;
     }
 
-    private void createCustomConfig() throws IOException {
-        customConfigFile = new File(getDataFolder(), "custom.yaml");
+    public void createCustomConfig(String fileName) throws IOException {
+        File customConfigFile = new File(getDataFolder(), fileName);
         if (!customConfigFile.exists()) {
             customConfigFile.getParentFile().mkdirs();
+            String fileSeparator = System.getProperty("file.separator");
+            customConfigFile = new File(getDataFolder().getAbsolutePath() + fileSeparator + fileName);
             customConfigFile.createNewFile();
-            saveResource("custom.yaml", false);
         }
-
-        customConfig = new YamlConfiguration();
+        generalConfig = new YamlConfiguration();
         try {
-            customConfig.load(customConfigFile);
+            generalConfig.load(customConfigFile);
         } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+            getLogger().warning(String.format("尝试读取创建的配置文件失败: %s, %s", customConfigFile.getAbsolutePath(),
+                    e.getMessage()));
         }
     }
 }
