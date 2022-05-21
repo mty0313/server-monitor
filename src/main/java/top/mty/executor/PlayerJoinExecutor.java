@@ -37,13 +37,16 @@ public class PlayerJoinExecutor implements EventExecutor {
                 myPlayer.getIsNewPlayer().getDesc(),
                 DateUtils.now());
         Configuration playerConfig = instance.getGeneralConfig();
-        String barkPushUrl = playerConfig.getString(PLAYER_PUSH_URL_BARK);
+        String[] barkPushUrls = playerConfig.getString(PLAYER_PUSH_URL_BARK).split(",");
         try {
-            String command = "curl " + barkPushUrl + String.format("/%s/%s", "玩家登录提醒",
-                    description);
-            Process p = Runtime.getRuntime().exec(command);
-            logger.info(String.format("执行了curl: %s", description));
-        } catch (IOException e) {
+            for (String barkUrl: barkPushUrls) {
+                String command = "curl " + barkUrl + String.format("/%s/%s", "玩家登录提醒",
+                        description);
+                Process p = Runtime.getRuntime().exec(command);
+                int exit = p.waitFor();
+                logger.info(String.format("执行了curl: %s", description));
+            }
+        } catch (IOException | InterruptedException e) {
             logger.warning("命令执行失败");
         }
     }
