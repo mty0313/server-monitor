@@ -43,10 +43,9 @@ public class PlayerJoinExecutor implements EventExecutor {
                 String command = "curl " + barkUrl + String.format("/%s/%s", "玩家登录提醒",
                         description);
                 Process p = Runtime.getRuntime().exec(command);
-                int exit = p.waitFor();
                 logger.info(String.format("执行了curl: %s", description));
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             logger.warning("命令执行失败");
         }
     }
