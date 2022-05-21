@@ -2,7 +2,6 @@ package top.mty.executor;
 
 import org.bukkit.configuration.Configuration;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.EventExecutor;
@@ -17,7 +16,7 @@ import java.util.logging.Logger;
 
 public class PlayerJoinExecutor implements EventExecutor {
 
-    public static final String PREFIX = "PlayerJoin";
+    public static final String PLAYER_PUSH_URL_BARK = "player.pushUrl.bark";
 
     @Override
     public void execute(Listener listener, Event event) {
@@ -38,7 +37,7 @@ public class PlayerJoinExecutor implements EventExecutor {
                 myPlayer.getIsNewPlayer().getDesc(),
                 DateUtils.now());
         Configuration playerConfig = instance.getGeneralConfig();
-        String barkPushUrl = playerConfig.getString("player.pushUrl.bark");
+        String barkPushUrl = playerConfig.getString(PLAYER_PUSH_URL_BARK);
         try {
             String command = "curl " + barkPushUrl + String.format("/%s/%s", "玩家登录提醒",
                     description);
