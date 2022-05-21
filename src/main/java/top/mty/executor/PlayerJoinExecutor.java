@@ -20,7 +20,7 @@ public class PlayerJoinExecutor implements EventExecutor {
     public static final String PREFIX = "PlayerJoin";
 
     @Override
-    public void execute(Listener listener, Event event) throws EventException {
+    public void execute(Listener listener, Event event) {
         ServerMonitor instance = ServerMonitor.getInstance();
         Logger logger = instance.getLogger();
         PlayerJoinEvent joinEvent = (PlayerJoinEvent) event;
