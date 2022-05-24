@@ -1,5 +1,5 @@
 # server-monitor
-服务端用监控插件
+spigot1.12.2 服务端用监控插件
 
 # 功能
 1. 实现了PlayerJoinEvent的处理, 会推送一条消息给配置的bark终端设备
