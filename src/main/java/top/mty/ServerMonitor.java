@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.mty.executor.PlayerJoinExecutor;
+import top.mty.listener.ConfigChangeListener;
 import top.mty.listener.PlayerJoinListener;
 
 import java.io.IOException;
@@ -19,6 +20,8 @@ public class ServerMonitor extends JavaPlugin {
     private static ServerMonitor instance;
     private FileConfiguration generalConfig;
 
+    private Path configFilePath;
+
     public static ServerMonitor getInstance() {
         return instance;
     }
@@ -30,11 +33,16 @@ public class ServerMonitor extends JavaPlugin {
         // register event
         getServer().getPluginManager().registerEvent(PlayerJoinEvent.class, new PlayerJoinListener(),
                 EventPriority.NORMAL, new PlayerJoinExecutor(), this);
+
+        configFilePath = Paths.get(getDataFolder().getAbsolutePath(), "general.yml");
         try {
-            createCustomConfig("general.yml");
+            createCustomConfig();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        // register config file change event
+        new ConfigChangeListener().addListener();
+
     }
 
     @Override
@@ -46,23 +54,26 @@ public class ServerMonitor extends JavaPlugin {
         return this.generalConfig;
     }
 
-    public void createCustomConfig(String fileName) throws IOException {
-        Path customConfigFilePath = Paths.get(getDataFolder().getAbsolutePath(), fileName);
-        Path parentPath = customConfigFilePath.getParent();
+    public Path getConfigFilePath() {
+        return this.configFilePath;
+    }
+
+    public void createCustomConfig() throws IOException {
+        Path parentPath = configFilePath.getParent();
 
         if (!Files.exists(parentPath)) {
             Files.createDirectory(parentPath);
         }
-        if (!Files.exists(customConfigFilePath)) {
-            Files.createFile(customConfigFilePath);
+        if (!Files.exists(configFilePath)) {
+            Files.createFile(configFilePath);
         }
 
         generalConfig = new YamlConfiguration();
         // TODO 已经throw是否还需要try-catch
         try {
-            generalConfig.load(customConfigFilePath.toString());
+            generalConfig.load(configFilePath.toString());
         } catch (IOException | InvalidConfigurationException e) {
-            getLogger().warning(String.format("尝试读取创建的配置文件失败: %s, %s", customConfigFilePath,
+            getLogger().warning(String.format("尝试读取创建的配置文件失败: %s, %s", configFilePath,
                     e.getMessage()));
         }
     }
