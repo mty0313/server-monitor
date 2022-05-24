@@ -9,8 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import top.mty.executor.PlayerJoinExecutor;
 import top.mty.listener.PlayerJoinListener;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ServerMonitor extends JavaPlugin {
 
@@ -35,6 +37,7 @@ public class ServerMonitor extends JavaPlugin {
         }
     }
 
+    @Override
     public void onDisable() {
         getLogger().info("ServerMonitor Disabled");
     }
@@ -44,18 +47,22 @@ public class ServerMonitor extends JavaPlugin {
     }
 
     public void createCustomConfig(String fileName) throws IOException {
-        File customConfigFile = new File(getDataFolder(), fileName);
-        if (!customConfigFile.exists()) {
-            customConfigFile.getParentFile().mkdirs();
-            String fileSeparator = System.getProperty("file.separator");
-            customConfigFile = new File(getDataFolder().getAbsolutePath() + fileSeparator + fileName);
-            customConfigFile.createNewFile();
+        Path customConfigFilePath = Paths.get(getDataFolder().getAbsolutePath(), fileName);
+        Path parentPath = customConfigFilePath.getParent();
+
+        if (!Files.exists(parentPath)) {
+            Files.createDirectory(parentPath);
         }
+        if (!Files.exists(customConfigFilePath)) {
+            Files.createFile(customConfigFilePath);
+        }
+
         generalConfig = new YamlConfiguration();
+        // TODO 已经throw是否还需要try-catch
         try {
-            generalConfig.load(customConfigFile);
+            generalConfig.load(customConfigFilePath.toString());
         } catch (IOException | InvalidConfigurationException e) {
-            getLogger().warning(String.format("尝试读取创建的配置文件失败: %s, %s", customConfigFile.getAbsolutePath(),
+            getLogger().warning(String.format("尝试读取创建的配置文件失败: %s, %s", customConfigFilePath,
                     e.getMessage()));
         }
     }
