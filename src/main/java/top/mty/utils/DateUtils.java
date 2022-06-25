@@ -1,7 +1,7 @@
 package top.mty.utils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public enum DateUtils {
 
@@ -10,8 +10,7 @@ public enum DateUtils {
     public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
     public static String now() {
-        Date now = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat(YYYYMMDDHHMMSS);
-        return formatter.format(now);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYYMMDDHHMMSS);
+        return formatter.format(LocalDateTime.now());
     }
 }

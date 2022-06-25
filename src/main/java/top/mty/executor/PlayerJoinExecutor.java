@@ -1,7 +1,9 @@
 package top.mty.executor;
 
 import org.bukkit.configuration.Configuration;
+
 import org.bukkit.entity.Player;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -19,10 +21,18 @@ public class PlayerJoinExecutor implements EventExecutor {
 
     public static final String PLAYER_PUSH_URL_BARK = "player.pushUrl.bark";
 
+    private final FileConfiguration generalConfig;
+
+    private final Logger logger;
+
+    public PlayerJoinExecutor() {
+        ServerMonitor instance = ServerMonitor.getInstance();
+        logger = instance.getLogger();
+        generalConfig = instance.getGeneralConfig();
+    }
+
     @Override
     public void execute(Listener listener, Event event) {
-        ServerMonitor instance = ServerMonitor.getInstance();
-        Logger logger = instance.getLogger();
         PlayerJoinEvent joinEvent = (PlayerJoinEvent) event;
         Player joinedPlayer = joinEvent.getPlayer();
         initPlayer(joinedPlayer);
@@ -39,13 +49,12 @@ public class PlayerJoinExecutor implements EventExecutor {
                 myPlayer.getGameMode().name(),
                 myPlayer.getIsNewPlayer().getDesc(),
                 DateUtils.now());
-        Configuration playerConfig = instance.getGeneralConfig();
-        String[] barkPushUrls = playerConfig.getString(PLAYER_PUSH_URL_BARK).split(",");
+        String[] barkPushUrls = ((Configuration) generalConfig).getString(PLAYER_PUSH_URL_BARK).split(",");
         try {
-            for (String barkUrl: barkPushUrls) {
+            for (String barkUrl : barkPushUrls) {
                 String command = "curl " + barkUrl + String.format("/%s/%s", "玩家登录提醒",
                         description);
-                Process p = Runtime.getRuntime().exec(command);
+                Runtime.getRuntime().exec(command);
                 logger.info(String.format("执行了curl: %s", description));
             }
         } catch (IOException e) {
