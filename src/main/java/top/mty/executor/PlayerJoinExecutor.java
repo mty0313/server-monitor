@@ -1,6 +1,8 @@
 package top.mty.executor;
 
 import org.bukkit.configuration.Configuration;
+
+import org.bukkit.entity.Player;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -32,7 +34,9 @@ public class PlayerJoinExecutor implements EventExecutor {
     @Override
     public void execute(Listener listener, Event event) {
         PlayerJoinEvent joinEvent = (PlayerJoinEvent) event;
-        MyPlayer myPlayer = Player2MyPlayer.getInstance().convert(joinEvent.getPlayer());
+        Player joinedPlayer = joinEvent.getPlayer();
+        initPlayer(joinedPlayer);
+        MyPlayer myPlayer = Player2MyPlayer.getInstance().convert(joinedPlayer);
         try {
             Assert.notNull(myPlayer);
         } catch (Exception e) {
@@ -56,5 +60,14 @@ public class PlayerJoinExecutor implements EventExecutor {
         } catch (IOException e) {
             logger.warning("命令执行失败");
         }
+    }
+
+    /**
+     * 初始化player相关属性
+     * @param player
+     */
+    private void initPlayer(Player player) {
+        // 所有玩家进入服务器之后都设定睡觉状态忽略, 即不需要所有玩家睡觉就能跳过黑夜
+        player.setSleepingIgnored(true);
     }
 }
