@@ -14,25 +14,19 @@ import top.mty.entity.MyPlayer;
 import top.mty.utils.Assert;
 import top.mty.utils.DateUtils;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 public class PlayerJoinExecutor implements EventExecutor {
 
     public static final String PLAYER_PUSH_URL_BARK = "player.pushUrl.bark";
 
-    private final FileConfiguration generalConfig;
-
-    private final Logger logger;
-
-    public PlayerJoinExecutor() {
-        ServerMonitor instance = ServerMonitor.getInstance();
-        logger = instance.getLogger();
-        generalConfig = instance.getGeneralConfig();
-    }
+    public static final String LOG_SERVER_URL = "activityLog.serverUrl";
 
     @Override
     public void execute(Listener listener, Event event) {
+        ServerMonitor instance = ServerMonitor.getInstance();
+        Logger logger = instance.getLogger();
         PlayerJoinEvent joinEvent = (PlayerJoinEvent) event;
         Player joinedPlayer = joinEvent.getPlayer();
         initPlayer(joinedPlayer);
@@ -43,23 +37,11 @@ public class PlayerJoinExecutor implements EventExecutor {
             logger.warning("player不存在");
             return;
         }
-        String description = String.format("%s加入游戏,管理员:%s,模式:%s,新玩家:%s@%s",
-                myPlayer.getName(),
-                myPlayer.getIsOp().getDesc(),
-                myPlayer.getGameMode().name(),
-                myPlayer.getIsNewPlayer().getDesc(),
-                DateUtils.now());
-        String[] barkPushUrls = ((Configuration) generalConfig).getString(PLAYER_PUSH_URL_BARK).split(",");
-        try {
-            for (String barkUrl : barkPushUrls) {
-                String command = "curl " + barkUrl + String.format("/%s/%s", "玩家登录提醒",
-                        description);
-                Runtime.getRuntime().exec(command);
-                logger.info(String.format("执行了curl: %s", description));
-            }
-        } catch (IOException e) {
-            logger.warning("命令执行失败");
-        }
+        Configuration generalConfig = instance.getGeneralConfig();
+        String[] barkPushUrls = generalConfig.getString(PLAYER_PUSH_URL_BARK).split(",");
+        doBarkPush(myPlayer, barkPushUrls, logger);
+        String logActionUrl = String.format("%s/mc/save", generalConfig.getString(LOG_SERVER_URL));
+        logLoginAction(myPlayer, logActionUrl, logger);
     }
 
     /**
@@ -68,6 +50,38 @@ public class PlayerJoinExecutor implements EventExecutor {
      */
     private void initPlayer(Player player) {
         // 所有玩家进入服务器之后都设定睡觉状态忽略, 即不需要所有玩家睡觉就能跳过黑夜
-        player.setSleepingIgnored(true);
+//        player.setSleepingIgnored(true);
+    }
+
+    private void doBarkPush(MyPlayer myPlayer, String[] barkPushUrls, Logger logger) {
+        String description = String.format("%s加入游戏,管理员:%s,模式:%s,新玩家:%s@%s",
+            myPlayer.getName(),
+            myPlayer.getIsOp().getDesc(),
+            myPlayer.getGameMode().name(),
+            myPlayer.getIsNewPlayer().getDesc(),
+            DateUtils.now());
+        try {
+            for (String barkUrl : barkPushUrls) {
+                String command = "curl " + barkUrl + String.format("/%s/%s", "玩家登录提醒",
+                    description);
+                Runtime.getRuntime().exec(command);
+                logger.info(String.format("执行了curl: %s", description));
+            }
+        } catch (Exception e) {
+            logger.warning("bark推送命令执行失败: " + e.getMessage());
+        }
+    }
+
+    private void logLoginAction(MyPlayer myPlayer, String logActionUrl, Logger logger) {
+        String user = myPlayer.getName();
+        String action = "login";
+        logActionUrl += "?user=" + user + "&action=" + action;
+        String command = String.format("curl -X POST %s", logActionUrl);
+        try {
+            Runtime.getRuntime().exec(command);
+            logger.info(String.format("执行了curl: %s", command));
+        } catch (Exception e) {
+            logger.warning("命令执行失败: " + command + ": " + e.getMessage());
+        }
     }
 }
