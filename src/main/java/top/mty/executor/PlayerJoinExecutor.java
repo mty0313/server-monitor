@@ -1,9 +1,7 @@
 package top.mty.executor;
 
 import org.bukkit.configuration.Configuration;
-
 import org.bukkit.entity.Player;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -14,7 +12,6 @@ import top.mty.entity.MyPlayer;
 import top.mty.utils.Assert;
 import top.mty.utils.DateUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 public class PlayerJoinExecutor implements EventExecutor {
@@ -65,7 +62,7 @@ public class PlayerJoinExecutor implements EventExecutor {
                 String command = "curl " + barkUrl + String.format("/%s/%s", "玩家登录提醒",
                     description);
                 Runtime.getRuntime().exec(command);
-                logger.info(String.format("执行了curl: %s", description));
+                logger.info(String.format("执行了bark推送: %s", command));
             }
         } catch (Exception e) {
             logger.warning("bark推送命令执行失败: " + e.getMessage());
@@ -79,7 +76,7 @@ public class PlayerJoinExecutor implements EventExecutor {
         String command = String.format("curl -X POST %s", logActionUrl);
         try {
             Runtime.getRuntime().exec(command);
-            logger.info(String.format("执行了curl: %s", command));
+            logger.info(String.format("log玩家登录事件: %s", user));
         } catch (Exception e) {
             logger.warning("命令执行失败: " + command + ": " + e.getMessage());
         }
