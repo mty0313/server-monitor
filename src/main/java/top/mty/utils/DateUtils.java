@@ -5,12 +5,12 @@ import java.time.format.DateTimeFormatter;
 
 public enum DateUtils {
 
-    INSTANCE;
+  INSTANCE;
 
-    public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
+  public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
-    public static String now() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYYMMDDHHMMSS);
-        return formatter.format(LocalDateTime.now());
-    }
+  public static String now() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYYMMDDHHMMSS);
+    return formatter.format(LocalDateTime.now());
+  }
 }
