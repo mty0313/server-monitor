@@ -8,22 +8,7 @@
   <artifactId>server-monitor</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <repositories>
-    <!-- This adds the Spigot Maven repository to the build -->
-    <repository>
-      <id>spigot-repo</id>
-      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-    </repository>
-  </repositories>
-
   <dependencies>
-    <!--This adds the Spigot API artifact to the build -->
-    <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
-      <version>1.12.2-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -31,6 +16,14 @@
       <version>1.18.24</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>org.bukkit</artifactId>
+      <version>1.7.10</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/src/main/resources/1.7.10/spigot-1.7.10.jar</systemPath>
+    </dependency>
+
   </dependencies>
 
   <properties>
