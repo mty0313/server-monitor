@@ -19,7 +19,7 @@ import static top.mty.executor.PlayerJoinExecutor.PLAYER_PUSH_URL_BARK;
 
 public class PlayerQuitExecutor implements EventExecutor {
   @Override
-  public void execute(Listener listener, Event event) throws EventException {
+  public void execute(Listener listener, Event event) {
     ServerMonitor instance = ServerMonitor.getInstance();
     Logger logger = instance.getLogger();
     PlayerQuitEvent quitEvent = (PlayerQuitEvent) event;
@@ -32,7 +32,7 @@ public class PlayerQuitExecutor implements EventExecutor {
       return;
     }
     Configuration generalConfig = instance.getGeneralConfig();
-    String[] barkPushUrls = generalConfig.getString(PLAYER_PUSH_URL_BARK).split(",");
+//    String[] barkPushUrls = generalConfig.getString(PLAYER_PUSH_URL_BARK).split(",");
     String logActionUrl = String.format("%s/mc/save", generalConfig.getString(LOG_SERVER_URL));
     logQuitAction(myPlayer, logActionUrl, logger);
   }

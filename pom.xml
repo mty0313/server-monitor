@@ -44,6 +44,14 @@
           </outputDirectory>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <!--设置为true，以便把本地的system的jar也包括进来-->
+          <includeSystemScope>true</includeSystemScope>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

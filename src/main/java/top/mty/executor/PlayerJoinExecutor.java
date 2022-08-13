@@ -35,8 +35,8 @@ public class PlayerJoinExecutor implements EventExecutor {
       return;
     }
     Configuration generalConfig = instance.getGeneralConfig();
-    String[] barkPushUrls = generalConfig.getString(PLAYER_PUSH_URL_BARK).split(",");
-    doBarkPush(myPlayer, barkPushUrls, logger);
+//    String[] barkPushUrls = generalConfig.getString(PLAYER_PUSH_URL_BARK).split(",");
+//    doBarkPush(myPlayer, barkPushUrls, logger);
     String logActionUrl = String.format("%s/mc/save", generalConfig.getString(LOG_SERVER_URL));
     logLoginAction(myPlayer, logActionUrl, logger);
   }
