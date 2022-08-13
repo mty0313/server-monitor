@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.EventExecutor;
 import top.mty.ServerMonitor;
 import top.mty.converter.Player2MyPlayer;
+import top.mty.entity.MinecraftColors;
 import top.mty.entity.MyPlayer;
 import top.mty.utils.Assert;
 import top.mty.utils.DateUtils;
@@ -69,13 +70,13 @@ public class PlayerJoinExecutor implements EventExecutor {
   }
 
   private void logLoginAction(MyPlayer myPlayer, String logActionUrl, Logger logger) {
-    String user = myPlayer.getName();
+    String user = MinecraftColors.filterColorCode(myPlayer.getName());
     String action = "login";
     logActionUrl += "?user=" + user + "&action=" + action;
     String command = String.format("curl -X POST %s", logActionUrl);
     try {
       Runtime.getRuntime().exec(command);
-      logger.info(String.format("log玩家登录事件: %s", user));
+      logger.info(String.format("log玩家登录事件: %s", command));
     } catch (Exception e) {
       logger.warning("命令执行失败: " + command + ": " + e.getMessage());
     }
